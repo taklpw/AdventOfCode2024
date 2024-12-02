@@ -24,15 +24,16 @@ public class Day02 : BaseDay
         var validReports = _reports
             // Are increasing or decreasing
             .Where(levels =>
-                levels
-                .Zip(levels.Skip(1), (current, next) => current.CompareTo(next) < 0 || current.CompareTo(next) > 0)
-                .All(isIncreasingorDecreasing => isIncreasingorDecreasing)
+                // Increasing
+                levels.SequenceEqual(levels.OrderBy(level => level)) ||
+                // Decreasing
+                levels.SequenceEqual(levels.OrderByDescending(level => level))
             )
             // Are within range
             .Where(levels =>
                 levels
                 .Zip(levels.Skip(1), (current, next) => Math.Abs(next - current))
-                .Any(absdiff => absdiff > 1 && absdiff < 3)
+                .All(absdiff => absdiff >= 1 && absdiff <= 3)
             );
         return new($"{validReports.Count()}");
     }
