@@ -40,7 +40,42 @@ public class Day02 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
+        var validReports = _reports
+            .Where(levels =>
+                // Generate indicies for levels
+                Enumerable.Range(0, levels.Count)
+                // Check if excluding any one index makes the report valid
+                .Any(skipIndex =>
+                    (levels
+                    // Skip the level where the index matches the currently skipped index
+                    .Where((level, index) => index != skipIndex)
+                    .OrderBy(level => level)
+                    // Check if the sorted list with the removed index is the same as the list with the removed index
+                    .SequenceEqual(levels.Where((level, index) => index != skipIndex))
+                    ||
+                    // Again but decending
+                    levels
+                    .Where((level, index) => index != skipIndex)
+                    .OrderByDescending(level => level)
+                    .SequenceEqual(levels.Where((level, index) => index != skipIndex)))
 
-        return new($"");
+                    // Using and and here this time since we're skipping indicies
+                    &&
+
+                    // Check if the level is also within range
+                    levels
+                    .Where((level, index) => index != skipIndex)
+                    .Zip(
+                        // Generate reports where the skipped index is uhh skipped
+                        levels
+                        .Where((level, index) => index != skipIndex)
+                        .Skip(1),
+                        // Apply the difference function
+                        (current, next) => Math.Abs(next - current))
+                    .All(absdiff => absdiff >= 1 && absdiff <= 3)
+                )
+            );
+
+        return new($"{validReports.Count()}");
     }
 }
