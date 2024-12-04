@@ -47,12 +47,12 @@ public class Day04 : BaseDay
         {
             (0, 1),     // Horizontal right
             (0, -1),    // Horizontal left
-            (1, 0),     // Vertical up
-            (-1, 0),    // Vertical down
-            (1, 1),     // Diagonal up right
-            (1, -1),    // Diagonal up left
-            (-1, 1),    // Diagonal down right
-            (-1, -1),   // Diagonal down left
+            (1, 0),     // Vertical down
+            (-1, 0),    // Vertical up
+            (1, 1),     // Diagonal down right
+            (1, -1),    // Diagonal down left
+            (-1, 1),    // Diagonal up right
+            (-1, -1),   // Diagonal up left
         };
 
         int targetCount = directions.Sum(direction => 
@@ -72,67 +72,39 @@ public class Day04 : BaseDay
         return new($"{targetCount}");
     }
 
-
-    private bool IsMasCrossAtPosition(List<string> grid, int startRow, int startCol, int rowStep, int colStep)
-    {
-        // Can we make a cross MAS at the current position
-        // M . S
-        //   A
-        // M . S
-
-        // Positions for the cross pattern
-        var crossPositions = new[]
-        {
-            (startRow, startCol),                               // First M
-            (startRow + rowStep, startCol + colStep),           // A
-            (startRow + 2 * rowStep, startCol + 2 * colStep),   // S
-            (startRow + 3 * rowStep, startCol + 3 * colStep)    // Final M
-        };
-
-        // Check if all positions are within grid bounds
-        return crossPositions.All(pos =>
-            pos.Item1 >= 0 &&
-            pos.Item1 < grid.Count &&
-            pos.Item2 >= 0 &&
-            pos.Item2 < grid[0].Length
-        )
-        // Check for full MAS cross pattern
-        && new[]
-        {
-            grid[crossPositions[0].Item1][crossPositions[0].Item2] == 'M',
-            grid[crossPositions[1].Item1][crossPositions[1].Item2] == 'A',
-            grid[crossPositions[2].Item1][crossPositions[2].Item2] == 'S',
-            grid[crossPositions[3].Item1][crossPositions[3].Item2] == 'M'
-        }.All(x => x);
-    }
-
-
-
     public override ValueTask<string> Solve_2()
     {
-        var directions = new List<(int rowDir, int colDir)>()
-        {
-            (0, 1),   // Horizontal
-            (1, 0),   // Vertical
-            (1, 1),   // Diagonal up right
-            (1, -1)   // Diagonal up left
-        };
+        int targetCount = _wordSearch
+            .SelectMany((row, i) =>
+                // Is the current line the possible centre of a 3x3 grid?
+                i >= 1 && i < _wordSearch.Count - 1 ?
+                // Is the current string index the possble centre of a 3x3 grid?
+                row.Select((_, j) => (i, j)).Where(t => t.j > 0 && t.j < row.Length - 1) :
+                // If not, give a nothing enumerable
+                Enumerable.Empty<(int i, int j)>())
+            // If we're in a 3x3 grid position and the centre square is A we're in business 
+            .Where(pos => _wordSearch[pos.i][pos.j] == 'A')
+            .Select(pos =>
+            {
+                // Create sub-grid
+                List<string> subgrid = new List<string>()
+                {
+                    _wordSearch[pos.i-1].Substring(pos.j-1, 3),
+                    _wordSearch[pos.i].Substring(pos.j-1, 3),
+                    _wordSearch[pos.i+1].Substring(pos.j-1, 3),
+                };
 
-        int targetCount = directions.Sum(direction =>
-        {
-            return
-            // Go along row
-            Enumerable.Range(0, _wordSearch.Count())
-            .Sum(row =>
-                // Go along column
-                Enumerable.Range(0, _wordSearch[0].Length)
-                .Count(col =>
-                    IsMasCrossAtPosition(_wordSearch, row, col, direction.rowDir, direction.colDir) ||
-                    IsMasCrossAtPosition(_wordSearch, row, col, -direction.rowDir, -direction.colDir)
-                )
-            );
-        });
+                bool downRight =
+                    (subgrid[0][0] == 'M' && subgrid[2][2] == 'S') ||
+                    (subgrid[0][0] == 'S' && subgrid[2][2] == 'M');
 
+                bool downLeft =
+                    (subgrid[0][2] == 'M' && subgrid[2][0] == 'S') ||
+                    (subgrid[0][2] == 'S' && subgrid[2][0] == 'M');
+
+                return downLeft && downRight;
+            })
+            .Count(result => result);
         return new($"{targetCount}");
     }
 }
