@@ -1,4 +1,5 @@
 ﻿using Spectre.Console;
+using System.Linq;
 
 namespace AdventOfCode;
 
@@ -60,7 +61,51 @@ public class Day05 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
+        var invalidPageIndices = Enumerable.Range(0, _pagesToProduce.Count)
+        .Where(i => _pagesToProduce[i]
+            .Select((currentPage, j) =>
+                _orderingRules.ContainsKey(currentPage) &&
+                _pagesToProduce[i].Take(j)
+                    .Intersect(_orderingRules[currentPage])
+                    .Any())
+            .Any(x => x));
 
-        return new($"{1}");
+       //var invalidPages = invalidPageIndices.Select(i => _pagesToProduce[i]).ToList();
+
+        var reorderedPagesList = invalidPageIndices
+            .Select(i => _pagesToProduce[i])
+            .Select(pages => pages
+                .Aggregate(
+                    new List<int>(),
+                    (reorderedPages, page) =>
+                    {
+                        if (!_orderingRules.ContainsKey(page))
+                        {
+                            reorderedPages.Add(page);
+                            return reorderedPages;
+                        }
+
+                        var insertIndex = _orderingRules[page]
+                            .Select(requiredPage => reorderedPages.IndexOf(requiredPage))
+                            .Where(index => index != -1)
+                            .DefaultIfEmpty(-1)
+                            .Min();
+
+                        if (insertIndex == -1)
+                            reorderedPages.Add(page);
+                        else
+                            reorderedPages.Insert(insertIndex, page);
+
+                        return reorderedPages;
+                    }
+                )
+            )
+            .ToList();
+
+        var totalMiddleValues = reorderedPagesList
+            .Sum(reorderedPages => reorderedPages[reorderedPages.Count/2]);
+
+
+        return new($"{totalMiddleValues}");
     }
 }
