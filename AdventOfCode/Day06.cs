@@ -1,5 +1,4 @@
 ﻿using Spectre.Console;
-using System.ComponentModel;
 using System.Linq;
 
 namespace AdventOfCode;
@@ -25,103 +24,6 @@ public class Day06 : BaseDay
 
     public override ValueTask<string> Solve_1()
     {
-        //(int vert, int horz) currentDirection = (0, 0);
-        //// (-1, 0) ^
-        //// (1, 0) v
-        //// (0, -1) <
-        //// (0, 1) >
-        //List<(int i, int j)> visitedCoordinates = new List<(int i, int j)>();
-        //(int i, int j) currentCoordinate = (-1, -1);
-
-        //// Find initial coordinate and direction
-        //for (int i = 0; i < _guardMap.Count; i++)
-        //{
-        //    for (int j = 0; j < _guardMap[i].Length; j++)
-        //    {
-        //        switch (_guardMap[i][j])
-        //        {
-        //            case '^':
-        //                currentDirection = (-1, 0);
-        //                currentCoordinate = (i, j);
-        //                break;
-        //            case 'v':
-        //                currentDirection = (1, 0);
-        //                currentCoordinate = (i, j);
-        //                break;
-        //            case '<':
-        //                currentDirection = (0, -1);
-        //                currentCoordinate = (i, j);
-        //                break;
-        //            case '>':
-        //                currentDirection = (0, 1);
-        //                currentCoordinate = (i, j);
-        //                break;
-        //        }
-        //    }
-        //}
-
-        //visitedCoordinates.Add(currentCoordinate);
-
-        //bool guardOnMap = true;
-        //while (guardOnMap)
-        //{
-        //    // Move
-        //    (int i, int j) potentialCoordinate = (currentCoordinate.i + currentDirection.vert, currentCoordinate.j + currentDirection.horz);
-
-        //    // Out of map
-        //    if (potentialCoordinate.i >= _guardMap.Count || potentialCoordinate.i < 0 ||
-        //        potentialCoordinate.j >= _guardMap[0].Count() || potentialCoordinate.j < 0)
-        //    {
-        //        guardOnMap = false;
-        //        break;
-        //    }
-
-        //    // Obstacle
-        //    if (_guardMap[potentialCoordinate.i][potentialCoordinate.j] == '#')
-        //    {
-        //        bool obstacleAhead = true;
-        //        while (obstacleAhead)
-        //        {
-        //            // Turn right
-        //            switch (currentDirection)
-        //            {
-        //                case (-1, 0):
-        //                    currentDirection = (0, 1);
-        //                    break;
-        //                case (1, 0):
-        //                    currentDirection = (0, -1);
-        //                    break;
-        //                case (0, -1):
-        //                    currentDirection = (-1, 0);
-        //                    break;
-        //                case (0, 1):
-        //                    currentDirection = (1, 0);
-        //                    break;
-        //            }
-        //            potentialCoordinate = (currentCoordinate.i + currentDirection.vert, currentCoordinate.j + currentDirection.horz);
-        //            // Out of map
-        //            if (potentialCoordinate.i >= _guardMap.Count || potentialCoordinate.i < 0 ||
-        //                potentialCoordinate.j >= _guardMap[0].Count() || potentialCoordinate.j < 0)
-        //            {
-        //                guardOnMap = false;
-        //                break;
-        //            }
-
-        //            if (_guardMap[potentialCoordinate.i][potentialCoordinate.j] != '#' && guardOnMap)
-        //            {
-        //                obstacleAhead = false;
-        //            }
-        //        }
-        //    }
-        //    if (guardOnMap)
-        //    {
-        //        currentCoordinate = potentialCoordinate;
-        //        visitedCoordinates.Add(currentCoordinate);
-        //    }
-        //}
-        //int uniqueCoordsVisited = visitedCoordinates.Select(coord => coord).Distinct().Count();
-        //return new($"{uniqueCoordsVisited}");
-
         // Directions: Up (^), Right (>), Down (v), Left (<)
         (int vert, int horz)[] Directions = { (-1, 0), (0, 1), (1, 0), (0, -1) };
 
